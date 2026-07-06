@@ -1,9 +1,12 @@
 from fastapi import FastAPI
+from pydantic import BaseModel
+import joblib
+import pandas as pd
 from fastapi.middleware.cors import CORSMiddleware
 
-app = FastAPI()
+app = FastAPI(title="API de Estimación de Vehículos")
 
-# Configuración correcta de CORS
+# Configuración CORS para permitir conexión con tu Frontend
 app.add_middleware(
     CORSMiddleware,
     allow_origins=["*"],  # Esto permite conexiones desde cualquier lugar
