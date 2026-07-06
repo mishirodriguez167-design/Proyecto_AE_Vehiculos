@@ -33,3 +33,4 @@ def estimar_precio(vehiculo: DatosVehiculo):
     df_entrada = pd.DataFrame(datos_diccionario)
     prediccion = modelo.predict(df_entrada)
     return {"precio_estimado": float(prediccion[0])}
+    
