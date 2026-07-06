@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>Estimador de Autos</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div class="contenedor">
+        <h2>Estimación de Valor de Mercado 🚗</h2>
+        <form id="formulario-auto">
+            <label>Marca:</label>
+            <select id="marca">
+                <option value="Toyota">Toyota</option>
+                <option value="Nissan">Nissan</option>
+                <option value="Hyundai">Hyundai</option>
+            </select>
+
+            <label>Año de Fabricación:</label>
+            <input type="number" id="anio" value="2018" min="1990" max="2026">
+
+            <label>Kilometraje (KM):</label>
+            <input type="number" id="kilometraje" value="50000" min="0">
+
+            <button type="button" onclick="enviarDatos()">Calcular Valor</button>
+        </form>
+
+        <h3 id="resultado">El precio estimado aparecerá aquí.</h3>
+    </div>
+
+    <script src="app.js"></script>
+</body>
+</html>
