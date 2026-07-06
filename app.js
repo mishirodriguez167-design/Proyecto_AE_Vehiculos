@@ -15,8 +15,8 @@ async function enviarDatos() {
     resultadoTexto.innerText = "Calculando con el modelo estadístico...";
 
     try {
-        // 3. HACER LA PETICIÓN EN RED (¡REEMPLAZA CON TU URL DE RENDER!)
-        const urlRender = 'https://api-prediccion-vehiculos.onrender.com/predecir';
+        // 3. HACER LA PETICIÓN EN RED
+        const urlRender = 'https://api-proyecto-ae-vehiculos.onrender.com';
         
         const respuesta = await fetch(urlRender, {
             method: 'POST',
