@@ -5,8 +5,7 @@ async function predecirPrecio() {
     const kilometraje = document.getElementById('kilometraje').value;
 
     // 2. Enviamos los datos a tu API en Render
-    // REEMPLAZA EL LINK DE ABAJO POR TU URL REAL DE RENDER
-    const urlAPI = 'https://api-proyecto-ae-vehiculos.onrender.com/predecir';
+    const urlAPI = 'https://api-proyecto-ae-vehiculos.onrender.com';
 
     try {
         const response = await fetch(urlAPI, {
