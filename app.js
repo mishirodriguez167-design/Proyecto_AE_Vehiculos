@@ -1,40 +1,39 @@
-async function enviarDatos() {
-    // 1. Capturar los valores que el usuario escribió en el formulario HTML
+async function predecirPrecio() {
+    // 1. Obtenemos los valores del formulario
     const marca = document.getElementById('marca').value;
-    const anio = parseInt(document.getElementById('anio').value);
-    const kilometraje = parseFloat(document.getElementById('kilometraje').value);
+    const anio = document.getElementById('anio').value;
+    const kilometraje = document.getElementById('kilometraje').value;
 
-    // 2. Empaquetar los datos en un formato JSON estructurado
-    const payload = {
-        marca: marca,
-        anio: anio,
-        kilometraje: kilometraje
-    };
-
-    const resultadoTexto = document.getElementById('resultado');
-    resultadoTexto.innerText = "Calculando con el modelo estadístico...";
+    // 2. Enviamos los datos a tu API en Render
+    // REEMPLAZA EL LINK DE ABAJO POR TU URL REAL DE RENDER
+    const urlAPI = 'https://api-proyecto-ae-vehiculos.onrender.com/predecir';
 
     try {
-        // 3. HACER LA PETICIÓN EN RED
-        const urlRender = 'https://api-proyecto-ae-vehiculos.onrender.com';
-        
-        const respuesta = await fetch(urlRender, {
+        const response = await fetch(urlAPI, {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json'
             },
-            body: JSON.stringify(payload) // Enviamos el paquete de datos
+            body: JSON.stringify({
+                marca: marca,
+                anio: parseInt(anio),
+                kilometraje: parseFloat(kilometraje)
+            })
         });
 
-        // 4. Recibir la respuesta del servidor de Render
-        const datosRespuesta = await respuesta.json();
-        
-        // 5. Mostrar el precio estimado en la pantalla de forma bonita
-        resultadoTexto.innerText = `Valor Estimado de Mercado: $${datosRespuesta.precio_estimado.toLocaleString('en-US', {minimumFractionDigits: 2, maximumFractionDigits: 2})}`;
+        // 3. Procesamos la respuesta
+        if (!response.ok) {
+            throw new Error('Error en la conexión con el servidor');
+        }
 
+        const data = await response.json();
+        
+        // 4. Mostramos el resultado en el HTML
+        document.getElementById('resultado').innerText = "Precio estimado: $" + data.precio_estimado.toFixed(2);
+        
     } catch (error) {
-        console.error("Error en la petición:", error);
-        resultadoTexto.innerText = "Hubo un error al conectar con el servidor de IA.";
+        console.error('Error:', error);
+        document.getElementById('resultado').innerText = "Error al conectar con el servidor. Intenta de nuevo.";
     }
 }
 
