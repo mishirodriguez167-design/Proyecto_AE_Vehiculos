@@ -15,7 +15,7 @@ app.add_middleware(
 # Cargar el modelo
 @app.post("/predecir")
 async def predecir(datos: dict):
-modelo = joblib.load('modelo_vehiculos.pkl')
+    modelo = joblib.load('modelo_vehiculos.pkl')
 
 class DatosVehiculo(BaseModel):
     marca: str
