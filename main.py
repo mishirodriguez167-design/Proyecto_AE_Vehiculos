@@ -1,21 +1,20 @@
 from fastapi import FastAPI
-from pydantic import BaseModel
-import joblib
-import pandas as pd
 from fastapi.middleware.cors import CORSMiddleware
 
-app = FastAPI(title="API de Estimación de Vehículos")
+app = FastAPI()
 
-# Configuración CORS para permitir conexión con tu Frontend
+# Configuración correcta de CORS
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"], 
+    allow_origins=["*"],  # Esto permite conexiones desde cualquier lugar
     allow_credentials=True,
-    allow_methods=["*"],
+    allow_methods=["*"],  # Permite GET, POST, etc.
     allow_headers=["*"],
 )
 
 # Cargar el modelo
+@app.post("/predecir")
+async def predecir(datos: dict):
 modelo = joblib.load('modelo_vehiculos.pkl')
 
 class DatosVehiculo(BaseModel):
