@@ -1,82 +1,26 @@
-const urlAPI = 'https://api-proyecto-ae-vehiculos.onrender.com/predecir';
+// Dirección pública del backend alojado en Render
+const API_URL =
+    "https://api-proyecto-ae-vehiculos.onrender.com";
 
-
+// Obtener el formulario
 const formulario = document.getElementById("formulario-auto");
-const botonCalcular = document.getElementById("boton-calcular");
-const textoBoton = document.getElementById("texto-boton");
-const cargador = document.getElementById("cargador");
 
-const mensajeError = document.getElementById("mensaje-error");
-const panelResultado = document.getElementById("panel-resultado");
-
-const precioResultado = document.getElementById("precio-resultado");
-const monedaResultado = document.getElementById("moneda-resultado");
-
-const resumenMarca = document.getElementById("resumen-marca");
-const resumenAnio = document.getElementById("resumen-anio");
-const resumenKilometraje = document.getElementById(
-    "resumen-kilometraje"
-);
-
-
+// Ejecutar cuando el usuario envíe el formulario
 formulario.addEventListener("submit", async function (evento) {
     evento.preventDefault();
 
-    limpiarMensajes();
+    // Elementos visuales
+    const boton = document.getElementById("boton-calcular");
+    const textoBoton = document.getElementById("texto-boton");
+    const cargador = document.getElementById("cargador");
+    const mensajeError = document.getElementById("mensaje-error");
+    const panelResultado = document.getElementById("panel-resultado");
 
-    const datosVehiculo = obtenerDatosFormulario();
+    mensajeError.textContent = "";
+    panelResultado.classList.add("oculto");
 
-    if (!validarDatos(datosVehiculo)) {
-        return;
-    }
-
-    activarCarga(true);
-
-    try {
-        const respuesta = await fetch(
-            `${API_URL}/predecir`,
-            {
-                method: "POST",
-
-                headers: {
-                    "Content-Type": "application/json"
-                },
-
-                body: JSON.stringify(datosVehiculo)
-            }
-        );
-
-        const resultado = await respuesta.json();
-
-        if (!respuesta.ok) {
-            throw new Error(
-                resultado.detail ||
-                "La API no pudo realizar la predicción."
-            );
-        }
-
-        mostrarResultado(
-            resultado,
-            datosVehiculo
-        );
-
-    } catch (error) {
-        console.error("Error:", error);
-
-        mensajeError.textContent =
-            error.message ||
-            "No fue posible conectarse con el servidor.";
-
-        panelResultado.classList.add("oculto");
-
-    } finally {
-        activarCarga(false);
-    }
-});
-
-
-function obtenerDatosFormulario() {
-    return {
+    // Recoger los datos del formulario
+    const datosVehiculo = {
         brand: document.getElementById("marca").value,
 
         year: Number(
@@ -98,98 +42,125 @@ function obtenerDatosFormulario() {
         owner:
             document.getElementById("propietario").value
     };
-}
 
-
-function validarDatos(datos) {
-    const anioActual = new Date().getFullYear();
-
-    if (!datos.brand) {
+    // Validaciones básicas
+    if (!datosVehiculo.brand) {
         mensajeError.textContent =
-            "Selecciona la marca del vehículo.";
-
-        return false;
+            "Selecciona una marca.";
+        return;
     }
 
     if (
-        !Number.isInteger(datos.year) ||
-        datos.year < 1990 ||
-        datos.year > anioActual
+        !datosVehiculo.year ||
+        datosVehiculo.year < 1990 ||
+        datosVehiculo.year > 2026
     ) {
         mensajeError.textContent =
-            `El año debe estar entre 1990 y ${anioActual}.`;
-
-        return false;
+            "Ingresa un año válido entre 1990 y 2026.";
+        return;
     }
 
     if (
-        !Number.isFinite(datos.km_driven) ||
-        datos.km_driven < 0
+        Number.isNaN(datosVehiculo.km_driven) ||
+        datosVehiculo.km_driven < 0
     ) {
         mensajeError.textContent =
-            "El kilometraje debe ser un número positivo.";
-
-        return false;
+            "Ingresa un kilometraje válido.";
+        return;
     }
 
-    return true;
-}
+    // Activar estado de carga
+    boton.disabled = true;
+    textoBoton.textContent = "Calculando...";
+    cargador.classList.remove("oculto");
 
+    try {
+        // AQUÍ VA EL CÓDIGO FETCH
+        const respuesta = await fetch(
+            `${API_URL}/predecir`,
+            {
+                method: "POST",
 
-function mostrarResultado(resultado, datosVehiculo) {
-    const precio = Number(
-        resultado.precio_estimado
-    );
+                headers: {
+                    "Content-Type": "application/json"
+                },
 
-    if (!Number.isFinite(precio)) {
-        throw new Error(
-            "El servidor devolvió una predicción inválida."
+                body: JSON.stringify(datosVehiculo)
+            }
         );
-    }
 
-    precioResultado.textContent = precio.toLocaleString(
-        "es-PE",
-        {
-            minimumFractionDigits: 2,
-            maximumFractionDigits: 2
+        // Convertir la respuesta de Render a JSON
+        const resultado = await respuesta.json();
+
+        // Revisar si la API devolvió un error
+        if (!respuesta.ok) {
+            throw new Error(
+                resultado.detail ||
+                "No se pudo calcular el precio."
+            );
         }
-    );
 
-    monedaResultado.textContent =
-        resultado.moneda || "INR";
+        // Obtener el precio
+        const precio = Number(
+            resultado.precio_estimado
+        );
 
-    resumenMarca.textContent = datosVehiculo.brand;
-    resumenAnio.textContent = datosVehiculo.year;
+        if (!Number.isFinite(precio)) {
+            throw new Error(
+                "La API devolvió un precio inválido."
+            );
+        }
 
-    resumenKilometraje.textContent =
-        `${datosVehiculo.km_driven.toLocaleString("es-PE")} km`;
+        // Mostrar precio
+        document.getElementById(
+            "precio-resultado"
+        ).textContent = precio.toLocaleString(
+            "es-PE",
+            {
+                minimumFractionDigits: 2,
+                maximumFractionDigits: 2
+            }
+        );
 
-    panelResultado.classList.remove("oculto");
+        // Mostrar moneda
+        document.getElementById(
+            "moneda-resultado"
+        ).textContent = resultado.moneda || "INR";
 
-    panelResultado.scrollIntoView({
-        behavior: "smooth",
-        block: "nearest"
-    });
-}
+        // Mostrar resumen del vehículo
+        document.getElementById(
+            "resumen-marca"
+        ).textContent = datosVehiculo.brand;
 
+        document.getElementById(
+            "resumen-anio"
+        ).textContent = datosVehiculo.year;
 
-function activarCarga(estaCargando) {
-    botonCalcular.disabled = estaCargando;
+        document.getElementById(
+            "resumen-kilometraje"
+        ).textContent =
+            `${datosVehiculo.km_driven.toLocaleString("es-PE")} km`;
 
-    textoBoton.textContent = estaCargando
-        ? "Calculando estimación..."
-        : "Calcular valor estimado";
+        // Hacer visible el resultado
+        panelResultado.classList.remove("oculto");
 
-    cargador.classList.toggle(
-        "oculto",
-        !estaCargando
-    );
-}
+        panelResultado.scrollIntoView({
+            behavior: "smooth",
+            block: "nearest"
+        });
 
+    } catch (error) {
+        console.error("Error:", error);
 
-function limpiarMensajes() {
-    mensajeError.textContent = "";
-    panelResultado.classList.add("oculto");
-}
+        mensajeError.textContent =
+            `Error: ${error.message}`;
 
+    } finally {
+        // Restaurar el botón
+        boton.disabled = false;
+        textoBoton.textContent =
+            "Calcular valor estimado";
+        cargador.classList.add("oculto");
+    }
+});
 
