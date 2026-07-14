@@ -16,7 +16,7 @@ app.add_middleware(
 )
 
 # 1. Cargar el modelo UNA SOLA VEZ al iniciar la API
-modelo = joblib.load('modelo_vehiculos.pkl')
+modelo = joblib.load('modelo_tasacion_automotriz.pkl')
 
 # 2. Definir el esquema de datos
 class DatosVehiculo(BaseModel):
