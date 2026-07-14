@@ -16,7 +16,7 @@ app.add_middleware(
 )
 
 # Cargar el modelo
-modelo = joblib.load('modelo_vehiculos.pkl')
+modelo = joblib.load('modelo_tasacion_automotriz.pkl')
 
 class DatosVehiculo(BaseModel):
     marca: str
