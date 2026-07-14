@@ -36,7 +36,7 @@ app.add_middleware(
 # =====================================================
 
 BASE_DIR = Path(__file__).resolve().parent
-RUTA_MODELO = BASE_DIR / "pipeline_vehiculos.pkl"
+RUTA_MODELO = BASE_DIR / "modelo_tasacion_automotriz.pkl"
 
 if not RUTA_MODELO.exists():
     raise RuntimeError(
